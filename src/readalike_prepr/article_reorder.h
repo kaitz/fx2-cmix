@@ -36,10 +36,6 @@ void bubblesort(std::vector<Accumulator>& mylist) {
         for (int j = 0; j < mylist.size() - i; j++) {
             if (mylist[j].id > mylist[j + 1].id) {
             std::swap(mylist[j], mylist[j + 1]);
-//		    Accumulator temp;
-//		    temp = mylist[j];
-//		    mylist[j] = mylist[j + 1];
-//		    mylist[j + 1] = temp;
             }
        }
    }
@@ -98,14 +94,10 @@ void reorder() {
     std::vector<int> used(NUM_OF_ARTICLES, 0);
     
     loadFile(".main");
-    /*
-    FILE* order_file = fopen(".new_article_order", "rb");
-    
-    while (wfgets(s, 8192*8, order_file) )  {
-        int res=atoi(s);
-        positions.push_back(res);
-        used[res] = 1;
-   }*/
+
+    // Article numbers need to be remapped (see article_remap.cpp).
+    // Here we read enwik9 in order to generate the article number mapping.
+    std::unordered_map<int, int> remap;
     std::ifstream infile(".main");
     std::string line;
     int count1 = -1, count2 = -1;
@@ -116,7 +108,6 @@ void reorder() {
       "      <text xml:space=\"preserve\">#Redirect",
       "      <text xml:space=\"preserve\">#REdirect",
       "      <text xml:space=\"preserve\">{{softredirect",};
-    std::unordered_map<int, int> remap;
     while (getline(infile, line)) {
       for (auto pre : prefix) {
         if (line.rfind(pre, 0) == 0) {
@@ -133,9 +124,10 @@ void reorder() {
         redirect = false;
       }
     }
+
     std::ifstream infile2(".new_article_order");
     while (getline(infile2, line)) {
-      int res = remap[stoi(line)];
+      int res = remap[stoi(line)];  // Article numbers get remapped.
       positions.push_back(res);
       used[res] = 1;
     }

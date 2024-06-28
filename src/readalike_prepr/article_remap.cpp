@@ -2,6 +2,8 @@
 // skipping redirect article numbers, we can improve compression of the
 // article order file.
 
+// To use: ./remap article_path enwik9_path > src/readalike_prepr/data/new_article_order
+
 #include <cstdio>
 #include <string>
 #include <unordered_map>
