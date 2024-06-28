@@ -5,6 +5,9 @@
 #include <string.h>
 #include <string>
 #include <vector>
+#include <cstdio>
+#include <unordered_map>
+#include <fstream>
 
 #define NUM_OF_ARTICLES 243425
 
@@ -95,14 +98,47 @@ void reorder() {
     std::vector<int> used(NUM_OF_ARTICLES, 0);
     
     loadFile(".main");
-    
+    /*
     FILE* order_file = fopen(".new_article_order", "rb");
     
     while (wfgets(s, 8192*8, order_file) )  {
         int res=atoi(s);
         positions.push_back(res);
         used[res] = 1;
-   }
+   }*/
+    std::ifstream infile(".main");
+    std::string line;
+    int count1 = -1, count2 = -1;
+    bool redirect = false;
+    std::vector<std::string> prefix = {
+      "      <text xml:space=\"preserve\">#REDIRECT",
+      "      <text xml:space=\"preserve\">#redirect",
+      "      <text xml:space=\"preserve\">#Redirect",
+      "      <text xml:space=\"preserve\">#REdirect",
+      "      <text xml:space=\"preserve\">{{softredirect",};
+    std::unordered_map<int, int> remap;
+    while (getline(infile, line)) {
+      for (auto pre : prefix) {
+        if (line.rfind(pre, 0) == 0) {
+          redirect = true;
+          break;
+        }
+      }
+      if (line == "  <page>") {
+        remap[count2] = count1;
+        if (!redirect) {
+          ++count2;
+        }
+        ++count1;
+        redirect = false;
+      }
+    }
+    std::ifstream infile2(".new_article_order");
+    while (getline(infile2, line)) {
+      int res = remap[stoi(line)];
+      positions.push_back(res);
+      used[res] = 1;
+    }
   
     if (positions.size() < NUM_OF_ARTICLES) {
         for (int i = 0; i < NUM_OF_ARTICLES; i++) {

@@ -45,9 +45,12 @@ cmix: fast slow
 	$(CC) $(LFLAGS) bit-context.o bracket-context.o bracket.o byte-mixer.o byte-model.o combined-context.o context-hash.o context-manager.o decoder.o dictionary.o direct-hash.o direct.o encoder.o indirect-hash.o indirect.o interval-hash.o interval.o match.o mixer-input.o mixer.o nonstationary.o fxcmv1.o ppmd.o predictor.o preprocessor.o run-map.o runner.o sigmoid.o sparse.o sse.o -s -o cmix
 	rm -f *.o
 
+remap: src/readalike_prepr/article_remap.cpp
+	$(CC) src/readalike_prepr/article_remap.cpp -o remap
+
 clean:
 	rm -f *.o
 	rm -f cmix
 
-all: cmix
+all: cmix remap
 
