@@ -173,7 +173,6 @@ void Predictor::AddMixers() {
 
 }
 int lstmpr=0, lstmex=0;
-extern int ex;
 float byte_mixer_output=0.0f;
 float Predictor::Predict() {
   unsigned int input_index = 0;
@@ -309,7 +308,7 @@ void Predictor::Perceive(int bit) {
   }
   byte_mixer_output = byte_mixer_->Predict()[0];
   lstmpr=Discretize(byte_mixer_output);
-  lstmex=ex;
+  lstmex=byte_mixer_->ex;
   fxcm_model_.Perceive(bit);
   if (byte_update)manager_.bit_context_ = 1;
 }

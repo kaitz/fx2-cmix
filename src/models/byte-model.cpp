@@ -1,13 +1,11 @@
 #include "byte-model.h"
 
 #include <numeric>
-int ex=0;
 
+ByteModel::ByteModel(const std::vector<bool>& vocab) : ex(0),top_(255), mid_(0),
+    bot_(0),  vocab_(vocab), probs_(1.0 / 256, 256) {}
 
-ByteModel::ByteModel(const std::vector<bool>& vocab) : top_(255), mid_(0),
-    bot_(0), vocab_(vocab), probs_(1.0 / 256, 256) {}
-
-const std::valarray<float>& ByteModel::Predict() const {
+ std::valarray<float>& ByteModel::Predict()  {
   auto mid = bot_ + ((top_ - bot_) / 2);
   float num = std::accumulate(&probs_[mid + 1], &probs_[top_ + 1], 0.0f);
   float denom = std::accumulate(&probs_[bot_], &probs_[mid + 1], num);
