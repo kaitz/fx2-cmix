@@ -90,7 +90,7 @@ inline int min(int a, int b) {return a<b?a:b;}
 inline int max(int a, int b) {return a<b?b:a;}
 #endif
 
-int num_models = 439+1+5*4-2;
+int num_models = 439+1-2;
 //int exported_models = 439;
 //int num_extra_predictions = 0;
 std::valarray<float> model_predictions(0.5f, num_models /*+ num_extra_predictions*/);
@@ -98,16 +98,14 @@ unsigned int prediction_index = 0;
 float conversion_factor = 1.0 / 4095;
 
 void AddPrediction(int x) {
-  assert(prediction_index >= 0 && prediction_index < num_models);
-  model_predictions[prediction_index++] = x * conversion_factor;
+    assert(prediction_index >= 0 && prediction_index < num_models);
+    model_predictions[prediction_index++] = x * conversion_factor;
 }
 
 void ResetPredictions() {
     assert(prediction_index >= 0 && prediction_index <= num_models);
-//printf("fp predictions %d\n",prediction_index );
-  prediction_index = 0;
+    prediction_index = 0;
 }
-
 
 #define VERSION 22
 
@@ -3222,7 +3220,7 @@ Mixer1 mxA[12];
 ContextMap cmC[6]; 
 // small state memory, per context max 3 uniqe contexts state sets
 // for large amount of small contexts
-ContextMap1 cmC1[9];
+ContextMap1 cmC1[8];
 // large state memory, per context max 14 uniqe contexts state sets
 // for large amount of large contexts
 ContextMap2 cmC2[18];
@@ -3291,7 +3289,7 @@ void PredictorInit() {
     apmA5.Init();
     rcmA[0].Init(1*4096*4096,6);
 
-    x.mxInputs1.ncount=(515+16+1+4*6)&-16;
+    x.mxInputs1.ncount=(515+16+1)&-16;
     x.mxInputs2.ncount=(8+15)&-16;
 
     // Provide inputs array info to mixers
@@ -3343,7 +3341,6 @@ void PredictorInit() {
     cmC1[6].Init(1*16*4096,1|(c_r[5]<<8)|(c_s[5]<<16),c_s3[5],&STA6[0][0],c_s4[5],0,0,&st2_p1[0]);
 
     cmC1[7].Init(     16*4096,4|(c_r[12]<<8)|(c_s[12]<<16),c_s3[12],&STA2[0][0],c_s4[12],0,1,&st2_p1[0]);
-    cmC1[8].Init(     16*4096,4|(c_r[12]<<8)|(c_s[12]<<16),c_s3[12],&STA2[0][0],c_s4[12],0,1,&st2_p1[0]);
 
     brcxt.Init(&brackets[0],8);
     qocxt.Init(&quotes[0],4,true);
@@ -4299,7 +4296,6 @@ int modelPrediction(int c0,int bpos,int c4){
         }
         if (fc==SPACE || brcxt.cxt==LESSTHAN) {
                cmC2[5].sets(); cmC2[5].sets(); cmC2[5].sets(); cmC2[5].sets(); cmC2[5].sets();
-               cmC1[8].sets();  cmC1[8].sets();
         } else {
             // Last sentence word(4) that is not Adjective with last Adjectiv stream word in a line.
             cmC2[5].set(worcxt.Word(4)*53+worcxt1.Word(1)+h+(stream3b & 511));
@@ -4311,8 +4307,6 @@ int modelPrediction(int c0,int bpos,int c4){
             const U32 lastParVerb=worcxt2.LastIf(1,worcxt.Type(1)&Verb);
             if (lastParVerb) cmC2[5].set(lastParVerb*11+word00+c1);
             else cmC2[5].sets();        
-            cmC1[8].set(h+word1);
-            cmC1[8].set(worcxt1.Word(1)*53+worcxt1.Word(2)*11+h); 
         }
         // current word and word(1) type upto preffix(not included), paragraph word(1) 
         cmC1[6].set(h+(worcxt.Type(1)&(0x1FF))+worcxt1.Word(1)); 
@@ -4474,14 +4468,10 @@ int modelPrediction(int c0,int bpos,int c4){
             // start of possible html tag, col not started including first char
             cmC2[13].sets();
             cmC2[13].sets();
-            cmC1[8].sets();
-            cmC1[8].sets();
         } else {
             // Word/Centence with current word(0), word(1) and word(2)
             cmC2[13].set(worcxt.Word(1)*83*1471-word0*53+worcxt.Word(2));
             cmC2[13].set(h+worcxt.Word(2) *53 *79+worcxt.Word(3) *53*47 *71);
-            cmC1[8].set(worcxt.Word(1)*83*1471-word0*53+worcxt.Word(2));
-            cmC1[8].set(h+worcxt.Word(2) *53 *79+worcxt.Word(3) *53*47 *71);
         }
 
         // Last byte in stream3bR and stream2b type with first char and bracket index
@@ -4592,7 +4582,6 @@ int modelPrediction(int c0,int bpos,int c4){
     cmC2[17].mix();
     cmC1[6].mix();
     cmC1[7].mix();
-    cmC1[8].mix();
     rcmA[0].mix();
     dcsm.mix();
     dcsm1.mix();
@@ -4707,8 +4696,9 @@ int modelPrediction(int c0,int bpos,int c4){
         mxA[7].cxt= ((stream3b&63)*256 +(BrFcIdx)*16 + (words&7)*2 + isParagraph)|(isMatch?128:0);
 
     // mixer 9
-    mxA[9].cxt=(stream3bR&511)*16*16+FcIdx*32+isParagraph*16+(lastWT&15);
+    mxA[9].cxt=(x.bpos<<8)*4+(fails&3)*256 + lstmex;
 
+    x.mxInputs1.add(stretch(lstmpr)); prediction_index--;
     x.mxInputs2.add(mxA[0].p1());
     x.mxInputs2.add(mxA[1].p1());
     x.mxInputs2.add(mxA[2].p1());
@@ -4719,6 +4709,7 @@ int modelPrediction(int c0,int bpos,int c4){
     x.mxInputs2.add(mxA[7].p1());
     x.mxInputs2.add(mxA[8].p1());
     x.mxInputs2.add(mxA[9].p1());
+    x.mxInputs2.add(stretch(lstmpr)/2); prediction_index--;
     return squash((mxA[10].p1()*7+mxA[11].p1()+4)>>3);
 }
 
