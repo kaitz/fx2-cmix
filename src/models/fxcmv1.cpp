@@ -1363,14 +1363,15 @@ struct ContextMap2 {
   }
 
 // Construct using m bytes of memory for c contexts(c+7)&-8
-void __attribute__ ((noinline)) Init(U32 m, int c, int s3,const U8 *nn1,int cs4,int k,int u,short *st){
+void __attribute__ ((noinline)) Init(U32 m1, int c, int s3,const U8 *nn1,int cs4,int k,int u,short *st){
     C=c&255;
-    tmask=((m>>6)-1); 
+    int m=m1*2;
+    tmask=((m>>7)-1); 
     cn=0;
     cxtMask=((1<C)-1)*2; // Inital zero contexts
     result=0;
     kep=k;
-    alloc1(t,(m>>6)+64*2,ptr,64);  
+    alloc1(t,(m>>7)+64*2,ptr,128);  
     nn=nn1;        
     int cmul=(c>>8)&255;          // run context mul value
     cms=(c>>16)&255;              // mix prediction mul value
@@ -1476,7 +1477,7 @@ int __attribute__ ((noinline))  mix() {
     } else {
     if (cp[i]) {
       assert(cp[i]>=&t[0].bh[0][0] && cp[i]<=&t[tmask].bh[14][6]);
-//      assert(((long long)(cp[i])&31)>=7);
+      assert(((long long)(cp[i])&127)>=29);
       *cp[i]=next(*cp[i], x.y);
     }
 
