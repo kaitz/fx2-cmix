@@ -51,6 +51,7 @@ remap: src/readalike_prepr/article_remap.cpp
 clean:
 	rm -f *.o
 	rm -f cmix
+	rm -f remap
 
 all: cmix remap
 

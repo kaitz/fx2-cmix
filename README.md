@@ -49,11 +49,17 @@ ConjunctiveAdverb or Conjunction - skip updating in stream 1. Conjunction for se
 * partially/fully decoded word index into dictionary is used as a context for mixer in fxcm mixer/cmix floating point mixer.
 * Some variables are renamed for better readability.
 
-## General:
-* Article order has changed. All REDIRECT articles removed from order. All articles about census data were moved to the end. All articles about images were moved after that. Redirects fall automatically after that. Some small tweaks.
+## Article order:
+Here is a description of the pipeline used to generate the new article order:
+1. A 1024-dimension embedding is created for each Wikipedia article using the [voyage-large-2-instruct](https://blog.voyageai.com/2024/05/05/voyage-large-2-instruct-instruction-tuned-and-rank-1-on-mteb/) model. Some article processing is done to extract more meaningful text. Jupyter notebook: src/article_order/embeddings.ipynb
+1. Using t-SNE, the embeddings are reduced to a single dimension. Jupyter notebook: src/article_order/tsne.ipynb
+1. Sort the articles based on the single dimension: sort -t$'\t' -n -k 2 before-sort.tsv > after-sort.tsv
+1. Run k-means clustering based on the single dimension. Within each cluster, sort articles based on their original order (numerically increasing). Jupyter notebook: src/article_order/kmeans.ipynb
+1. Reverse the order: tac final-clustered.txt > final-clustered-rev.txt
+1. Do some manual sorting. Certain article types (e.g. images, disambiguation pages, etc) are moved to the end of the order. Jupyter notebook: src/article_order/manual-sort.ipynb
 
 ## Transform:
-* Wikipedia transfor is now a single pass version. There are some differences. Some html entities are converted to UTF8. Transform disk usage is reduced from about 18GB to 7GB and time from 7 to 3 min on a test computer.
+* Wikipedia transform is now a single pass version. There are some differences. Some html entities are converted to UTF8. Transform disk usage is reduced from about 18GB to 7GB and time from 7 to 3 min on a test computer.
 
 Some C++ code is replaced with a simpler one (mostly in cmix), to keep executable size as small as possible.
 
