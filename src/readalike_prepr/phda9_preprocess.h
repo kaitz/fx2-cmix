@@ -245,10 +245,11 @@ void hent(char *in,char *out){
 //pre4
 void hent2(char *in,char *out){
     int j, k;
+    char *start = in;
     do {
     j=*in++; *out++=j;
 
-    if (j=='&' && *(in-2)=='&') {
+    if (j=='&' && (in - start > 1 && *(in-2)=='&')) {
         k=*(int*)in;
         if (k==0x746F7571 && *(in+4)==';')  *out++='"', in+=5;  else//'touq'
         if (k==0x7073626E && *(in+4)==';')  *out++='!', in+=5;  else//'psbn'
