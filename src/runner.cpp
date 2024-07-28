@@ -160,6 +160,7 @@ void Compress(unsigned long long input_bytes, std::ifstream* is,
   }
   e.Flush();
   *output_bytes = os->tellp();
+  delete [] buffer;
 }
 
 void Decompress(unsigned long long output_length, std::ifstream* is,
