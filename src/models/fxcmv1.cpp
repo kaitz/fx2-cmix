@@ -90,7 +90,7 @@ inline int min(int a, int b) {return a<b?a:b;}
 inline int max(int a, int b) {return a<b?b:a;}
 #endif
 
-int num_models = 439+1-2;
+int num_models = 439+1-2-7;
 //int exported_models = 439;
 //int num_extra_predictions = 0;
 std::valarray<float> model_predictions(0.5f, num_models /*+ num_extra_predictions*/);
@@ -1593,6 +1593,7 @@ struct DirectStateMap {
     cxt[index]=(cx)&mask;                                     // get new context
     sm[index].set(CxtState[cxt[index]]);    // predict from new context
     x.mxInputs1.add(stretch(sm[index].pr)>>2);
+    prediction_index--;
     x.mxInputs1.add(pre1[CxtState[cxt[index]]]);// sub
     prediction_index--;
     index++;
