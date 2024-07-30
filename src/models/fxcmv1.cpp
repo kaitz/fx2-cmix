@@ -91,9 +91,7 @@ inline int max(int a, int b) {return a<b?b:a;}
 #endif
 
 int num_models = 439+1-2-7;
-//int exported_models = 439;
-//int num_extra_predictions = 0;
-std::valarray<float> model_predictions(0.5f, num_models /*+ num_extra_predictions*/);
+std::valarray<float> model_predictions(0.5f, num_models);
 unsigned int prediction_index = 0;
 float conversion_factor = 1.0 / 4095;
 
@@ -111,8 +109,6 @@ void ResetPredictions() {
 
 #include <stdio.h>
 #include <time.h>
-//#include <mem.h>
-
 
 #ifdef UNIX  // not tested
 #include <stdio.h>
@@ -139,15 +135,14 @@ typedef unsigned long long int U64;
 
 template <class T> void alloc(T*&ptr, int c) {
   ptr=(T*)calloc(c, sizeof(T));
-  if (!ptr) exit(1);//quit("Out of memory.\n");
+  if (!ptr) exit(1);
 }
  
 // for aligned data
 template <class T> void alloc1(T*&data, int c,T*&ptr,const int align=16) {
   ptr=(T*)calloc(c, sizeof(T));
-  if (!ptr) exit(1);//quit("Out of memory.\n");
+  if (!ptr) exit(1);
   data=(T*)(((uintptr_t)ptr+(align-1)) & ~(uintptr_t)(align-1));
-  
 }
 
 // Squash returns p = 1/(1 + exp(-d)), d scaled by 8 bits, p scaled by 12 bits
@@ -427,7 +422,7 @@ void dosym(){
     }
 }
 
-char *so;// Our decoded word
+char *so;     // Our decoded word
 int lastCW=0; // Our decoded word index (max 44515)
 void decodeWord(int c){
     if (isDictLoaded==false) return;
@@ -555,7 +550,7 @@ void train(short *t, short *w, int n, int err) {
     int dp=dot_product(&tx[0], &wx[cxt*N], N)*shift1>>11;
     return pr=squash(dp);
   }
-    int __attribute__ ((noinline)) p1( ) {
+  int __attribute__ ((noinline)) p1( ) {
     assert(cxt<M);
     int dp=dot_product(&tx[0], &wx[cxt*N], N)*shift1>>11;
     if (dp<-2047) {
@@ -2079,12 +2074,12 @@ const U16 html[2]={'&'*256+'L','&'*256+'N'};
 // Sentence & words context
 
 struct WordsContext {
-    vec<U16,64*4> sbytes; // List of bytes surrounded by a current word, max 64
-    vec<U32,64*4> type; // List of bytes surrounded by a current word, max 64
-    vec<U32,64*4> stem; // List of bytes surrounded by a current word, max 64
-    vec<U8,64*4> capital;   //  max 64*4
-    U32 fword,ftype;          // First word of a sentence
-    U8 pbyte;           // Current byte before word
+    vec<U16,64*4> sbytes; // List of bytes surrounded by a current word, max 64*4
+    vec<U32,64*4> type;   // List of bytes surrounded by a current word, max 64*4
+    vec<U32,64*4> stem;   // List of bytes surrounded by a current word, max 64*4
+    vec<U8,64*4> capital; //  max 64*4
+    U32 fword,ftype;      // First word of a sentence
+    U8 pbyte;             // Current byte before word
     int wordcount,upper;
     int ref;
     void Init() {
@@ -2102,7 +2097,7 @@ struct WordsContext {
     void Set(U8 b,int a=0){
         pbyte=b;upper=a;
     }
-    void  __attribute__ ((noinline)) Update(U32 w,U8 b, U32 t,U32 s,bool r=false) {
+    void  __attribute__ ((noinline)) Update(U32 w,U8 b, U32 t,U32 s) {
         if (fword==0) fword=w;
         vec_push(&sbytes,U16(pbyte*256+b));  // Surrounding bytes
         vec_push(&type,t);
@@ -2151,7 +2146,7 @@ struct WordsContext {
         }
         return Word(j);
     }
-        U32  __attribute__ ((noinline)) LastIf(int j=1, U32 t=0){
+    U32  __attribute__ ((noinline)) LastIf(int j=1, U32 t=0){
         const int num=vec_size(&type);
         if (t==0) return Word(j);
         if (num>=j){
@@ -2176,19 +2171,6 @@ struct WordsContext {
         }
         }
         return 0;
-    }
-    U32  __attribute__ ((noinline)) Prev(int j=1, U32 t=0){
-         int num=vec_size(&type);
-        if (t==0) return Word(j);
-        num=min(num,j);
-        if (num){
-        
-        U32 typ=j;
-        for (int i=1; i<(num); i++){
-           if (Type(i)&t) typ=i;
-        }
-        }
-        return Word(j);
     }
     void __attribute__ ((noinline)) removeWordsL(int len, U8 c,U8 d, const bool f=true){
         if ((sBytes(1)&0xff)==d){
@@ -2350,10 +2332,6 @@ enum EngWordTypeFlagsSuffix {
   SuffixOUS              = (1<<9)|Adjective,
 };
  
-//https://www.eecis.udel.edu/~vijay/cis889/ie/pos-set.pdf
-//https://aclanthology.org/J95-4004.pdf
-//https://web.archive.org/web/20080719135212/http://www.comp.leeds.ac.uk/amalgam/tagsets/upenn.html
-//https://web.archive.org/web/20080609083206/http://www.cis.upenn.edu/~treebank/home.html
 #define NUM_VOWELS 6
 const char Vowels[NUM_VOWELS]={'a','e','i','o','u','y'};
 #define NUM_DOUBLES 9
@@ -3171,7 +3149,7 @@ U32 word0,word00,word1,word2,word3,wshift,x4,x5,isMatch,firstWord,linkword,senwo
 U32 number0,number1,numlen0,numlen1,mybenum;
 // First char context index, bracket/first char context index (max value 7)
 U32 FcIdx=0,BrFcIdx;
-U32 AH1=0,AH2=0x765BA55C; // APM hash
+U32 AH1=0,AH2=0x765BA55C; // AH2= initial APM hash
 U32 fails=0, failz=0, failcount=0;
 int nl,nl1,col,fc;
 U32 t1[0x100];
@@ -3266,7 +3244,6 @@ void PredictorInit() {
     dcsm.Init(27,dccount, &STA7[0][0] );
     dcsm1.Init(20,2, &STA7[0][0] );
 
-  
     // Mixers      size,  shift, err, errmul 
     mxA[0].Init(    2048, 237,  8, 69); // general
     mxA[1].Init(   6*256, 204,  8, 19); // ...
@@ -3280,7 +3257,6 @@ void PredictorInit() {
     mxA[9].Init( 0x20000,  55,  1, 24);
     mxA[10].Init(8*7*2*2,   6,  0,  4); // final mixer
     mxA[11].Init(      1,   6,  0,  4); // helper for final
-
 
     apmA0.Init();
     apmA1.Init();
@@ -3300,7 +3276,6 @@ void PredictorInit() {
     // Final mixer
     mxA[10].setTxWx(x.mxInputs2.ncount,&x.mxInputs2.n[0]);
     mxA[11].setTxWx(x.mxInputs2.ncount,&x.mxInputs2.n[0]);
-
 
     cmC2[0].Init( 8*4096*4096,3|(c_r[0]<<8)|(c_s[0]<<16),c_s3[0],&STA6[0][0],c_s4[0],0xf0,1,&st2_p1[0]);
     cmC2[1].Init(16*4096*4096,1|(c_r[1]<<8)|(c_s[1]<<16),c_s3[1],&STA6[0][0],c_s4[1],0xf0,1,&st2_p1[0]);
@@ -3799,7 +3774,6 @@ int modelPrediction(int c0,int bpos,int c4){
             // Repeat, has problems with list, probably
             stream2bR=(stream2bR<<2)+n2bState;
             stream3bR=(stream3bR<<3)+n3bState;
-            //stream3b=(stream3b<<3)+n3bState;// needs work
         }
         // Update byte stream x4 and order X contexts
         x4=(x4<<8)+c1;
@@ -4165,9 +4139,10 @@ int modelPrediction(int c0,int bpos,int c4){
                     while (fccxt.cxt==COLON) fccxt.Update(LF);
                 }
         }
+        // If we have wiki link [category:....] or [wikipedia:...] then remove that word.
         if (c1==COLON &&(strcmp(colonstr, "category")==0|| strcmp(colonstr, "wikipedia")==0)) fccxt.Update(LF),worcxt.Remove();
-
-        if (c1==SPACE && c2==LESSTHAN) fccxt.Update(GREATERTHAN); // Probably math operator, ignore
+        // Probably math operator, ignore
+        if (c1==SPACE && c2==LESSTHAN) fccxt.Update(GREATERTHAN); 
         // Switch from possible category link to http link ( [word:// to [http:// )
         if (fccxt.cxt==COLON && c2=='/' && c1=='/') fccxt.Update(LF),fccxt.Update(HTLINK);
         // Wiki link in the beginning of line
@@ -4555,8 +4530,8 @@ int modelPrediction(int c0,int bpos,int c4){
     ordX=ordX+cmC2[2].mix();
     ordX=ordX+cmC2[3].mix();
     ordW=cmC2[4].mix();
-    if (ordW==3) ordW=2;
-    ordW=ordW+cmC2[5].mix();if (ordW>3) ordW=3;
+    ordW=ordW+cmC2[5].mix();
+    if (ordW>3) ordW=3;
     cmC2[6].mix();
     cmC2[7].mix();
     cmC2[8].mix();
@@ -4573,7 +4548,7 @@ int modelPrediction(int c0,int bpos,int c4){
     cmC2[11].mix();
     cmC2[12].mix();
     // order Word
-    ordW=ordW+(cmC2[13].mix());  
+    ordW=ordW+cmC2[13].mix();  
     cmC[3].mix();  
     ordW=ordW+cmC2[14].mix();   
     cmC2[15].mix();
