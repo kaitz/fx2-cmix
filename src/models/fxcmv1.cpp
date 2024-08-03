@@ -3240,10 +3240,6 @@ void PredictorInit() {
     scmA[5].Init(8); 
     scmA[6].Init(7); 
 
-    const int dccount=5;
-    dcsm.Init(27,dccount, &STA7[0][0] );
-    dcsm1.Init(20,2, &STA7[0][0] );
-
     // Mixers      size,  shift, err, errmul 
     mxA[0].Init(    2048, 237,  8, 69); // general
     mxA[1].Init(   6*256, 204,  8, 19); // ...
@@ -3266,7 +3262,7 @@ void PredictorInit() {
     apmA5.Init();
     rcmA[0].Init(1*4096*4096,6);
 
-    x.mxInputs1.ncount=(515+16+1)&-16;
+    x.mxInputs1.ncount=(515+16+1-5*2-2*2)&-16;
     x.mxInputs2.ncount=(8+15)&-16;
 
     // Provide inputs array info to mixers
@@ -4499,17 +4495,9 @@ int modelPrediction(int c0,int bpos,int c4){
         mxA[8].cxt=deccode;
     }
 
-    dcsm.set((word0*191)*256+x.c0,x.y);
-    dcsm.set((word0*191+worcxt.Word(1))*256+x.c0,x.y);
-    dcsm.set((word0*191+worcxt.Word(2))*256+x.c0,x.y);
-    dcsm.set((word0*191+worcxt.Word(3))*256+x.c0,x.y);
-    dcsm.set((word0*191+worcxt.Word(4))*256+x.c0,x.y);
-
     //indirectBrByte
     const int c0b=c0<<(8-bpos);
-    dcsm1.set( (indirectBrByte)*256+x.c0,x.y);
-    dcsm1.set( (cxtind3)*191+x.c0,x.y);
-
+    
     scmA[0].mix(sscmrate);
     scmA[1].mix(sscmrate);
     scmA[2].mix(sscmrate);
@@ -4559,8 +4547,6 @@ int modelPrediction(int c0,int bpos,int c4){
     cmC1[6].mix();
     cmC1[7].mix();
     rcmA[0].mix();
-    dcsm.mix();
-    dcsm1.mix();
 
     AddPrediction(squash(64));  // FP mixer bias
 
