@@ -1,6 +1,7 @@
 # fx2-cmix
 The fx2-cmix is a updated implementation of [fx-cmix](https://github.com/kaitz/fx-cmix). 
 
+[Archive](https://drive.google.com/file/d/14QillUEElT5vR0ttmayRAXlciXuPwDWm/)
 
 # Submission Description
 This submission contains fallowing major modifications on top of the recent fx-cmix Hutter Prize winner:
@@ -69,32 +70,36 @@ Link 1 contains possible changes timeline before submission. Link 2 contains imp
 2. https://docs.google.com/document/d/1DW0Lqr_y-yAIvPpGua56j1Y3gRaMS5yt2RuQy5xgGMk/
 3. https://encode.su/threads/4161-fx-cmix-(HP)?p=82115&viewfull=1#post82115
 
+# Authors
+* Kaido Orav
+* Byron Knoll
 
 # Results
 Below is the fx2-cmix result:
 
 | Metric | Value |
 | --- | ----------- |
-| fx2-cmix compressor's executable file size (S1)| 437082 bytes |
-| fx2-cmix self-extracting archive size (S2)| 110954401 bytes |
-| Total size (S) | 111391483 bytes |
+| fx2-cmix compressor's executable file size (S1)| 441463 bytes |
+| fx2-cmix self-extracting archive size (S2)| 110351665 bytes |
+| Total size (S) | 110793128 bytes |
 | Previous record (L) | 112578322 bytes |
-| fx2-cmix improvement (1 - S/L) | 1.054% |
+| fx2-cmix improvement (1 - S/L) | 1,585% |
 
 | Experiment platform |  |
 | --- | ----------- |
 | Operating system | Ubuntu 20.04 LTS |
-| Processor | Intel(R) Xeon(R) CPU @ 3.10GHz [Geekbench score 982](https://browser.geekbench.com/v5/cpu/22495686)|
+| Processor | Intel(R) Xeon(R) CPU @ 3.10GHz [Geekbench score 1026](https://browser.geekbench.com/v5/cpu/22745877)|
 | Memory | 16 GB |
-| Decompression running time | 67 hours |
-| Decompression RAM max usage | 9726156 KiB |
+| Decompression running time | 65 hours |
+| Decompression RAM max usage | 9523660 KiB |
 | Decompression disk usage | ~21GB |
 
 Time, disk, and RAM usage are approximately symmetric for compression and decompression.
 # Time
-Must run below 70000/T h. T=982.
-70000/982=66,8316666666667*50/71,2830957230143=46,8776404761905 h
-46,9 h < 50 h
+Must run below 70000/T h. T=1026.
+70000/982=68,2261208576998 (max time)
+64,8166666666667*50/68,2261208576998=47,5013571428571 h
+47,5 h < 50 h
 
 # Instructions
 The installation and usage instructions for fx2-cmix are the same as for fast-cmix.
@@ -143,16 +148,20 @@ cd ./run
 ```
 
 # Expected output on compression
-```num models 469
-197915 bytes -> 1123959 bytes in 240.13 s.
-num models 469
-100094 bytes -> 411996 bytes in 101.37 s.
+```num models 461
+201043 bytes -> 1094862 bytes in 226.99 s.
+num models 461
+100088 bytes -> 411996 bytes in 94.24 s.
 preprocessing...
-Detected block types: TEXT: 100.0%
 Loaded 44515 words
-num models 469
+num models 461
+934220400 bytes -> 110111245 bytes in 228589.79 s.
 ```
-934014283 bytes -> 110xxxxxxx bytes in 240250.90 s.
 
 # Expected output on decompression
+```Loaded 44515 words
+num models 461
+Cmix decompression finished
 
+110111245 bytes -> 934220400 bytes in 229670.44 s.
+```

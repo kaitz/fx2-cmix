@@ -1296,7 +1296,7 @@ void processSymbol2_T( PPM_CONTEXT& q, int ) {
   }
 
   ~ppmd_Model() {
-    StopSubAllocator();
+    //StopSubAllocator();
   }
 
 void ppmd_PrepareByte( void ) {

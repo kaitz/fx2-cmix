@@ -3219,8 +3219,8 @@ WordsContext worcxt1;
 WordsContext worcxt2;
 BracketContext<U16> htcxt;
 
-DirectStateMap dcsm;  //1x5 inputs to fp
-DirectStateMap dcsm1; //1x2 inputs to fp
+//DirectStateMap dcsm;  //1x5 inputs to fp
+//DirectStateMap dcsm1; //1x2 inputs to fp
 
 SparseMatchModel smatch; // 2 inputs to fp
 
