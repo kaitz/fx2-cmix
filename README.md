@@ -74,6 +74,26 @@ Link 1 contains possible changes timeline before submission. Link 2 contains imp
 * Kaido Orav
 * Byron Knoll
 
+# Google Cloud Compute Engine parameters
+Machine configuration
+```
+Machine type: c2-standard-4
+CPU platform: Intel Cascade Lake
+Minimum CPU platform: None
+Architecture: x86/64
+vCPUs to core ratio:  1 vCPU per core
+Custom visible cores: —
+Display device: Disabled
+GPUs: None
+
+Boot disk
+Image: ubuntu-2004-focal-v20240731
+Description: Canonical, Ubuntu, 20.04 LTS, amd64 focal image built on 2024-07-31
+
+RAM 16GB
+HDD 50GB
+Intel(R) Xeon(R) CPU @ 3.10GHz
+```
 # Results
 Below is the fx2-cmix result:
 
@@ -97,7 +117,7 @@ Below is the fx2-cmix result:
 Time, disk, and RAM usage are approximately symmetric for compression and decompression.
 # Time
 Must run below 70000/T h. T=1026.
-70000/982=68,2261208576998 (max time)
+70000/1026=68,2261208576998 (max time)
 64,8166666666667*50/68,2261208576998=47,5013571428571 h
 47,5 h < 50 h
 
