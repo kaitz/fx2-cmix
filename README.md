@@ -158,7 +158,7 @@ To run the cmix-hp compressor use
 cd ./run
 cmix -e <PATH_TO_ENWIK9> enwik9.comp
 ```
-
+`enwik9.comp` is used to store intermediate data output. The final decompressor will be created as a file named `archive9`.
 
 # Running fx2-cmix decompressor
 The compressor is expected to output an executable file named `archive9` in the same directory (`./run`). The file `archive9` when executed is expected to reproduce the original enwik9 as a file named `enwik9_restored`. The executable file `archive9` should be launched without argments from the directory containing it.
