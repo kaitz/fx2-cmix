@@ -3,6 +3,8 @@ The fx2-cmix is a updated implementation of [fx-cmix](https://github.com/kaitz/f
 
 [Archive](https://drive.google.com/file/d/14QillUEElT5vR0ttmayRAXlciXuPwDWm/)
 
+Prize awarded on October 8, 2024. http://prize.hutter1.net/
+
 # Submission Description
 This submission contains fallowing major modifications on top of the recent fx-cmix Hutter Prize winner:
 * NLP (Natural language processing)
